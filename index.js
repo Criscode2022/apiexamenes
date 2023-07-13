@@ -157,6 +157,16 @@ app.get('/preguntas', (req, res) => {
 
 
   // Endpoint para obtener todas las respuestas
+app.get('/respuestas', (req, res) => {
+  pool.query('SELECT * FROM Respuestas', (err, result) => {
+    if (err) {
+      res.status(500).json(err);
+    } else {
+      res.status(200).json(result);
+    }
+  });
+});
+
 // Endpoint para añadir una nueva respuesta
 app.post('/respuestas', (req, res) => {
   const { id_pregunta, respuesta, es_correcta } = req.body;
