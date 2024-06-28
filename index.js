@@ -2,21 +2,19 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 
-
-
 const app = express();
-app.use(express.json()); // Permite recibir solicitudes con contenido JSON
-app.use(cors()); // Habilita CORS para todas las solicitudes
+app.use(express.json()); 
+app.use(cors());
 
-// Configuración de la conexión a la base de datos
 const pool = mysql.createPool({
   host: 'sql7.freemysqlhosting.net',
-  user: 'sql7632213',  // Reemplaza 'usuario' y 'contraseña' con tus datos
+  user: 'sql7632213',
   password: 'y84CmTviRS',
   database: 'sql7632213'
 });
 
-// Endpoint para obtener todos los temas
+// Get all themes
+
 app.get('/temas', (req, res) => {
   pool.query('SELECT * FROM Temas', (err, result) => {
     if (err) {
@@ -27,7 +25,8 @@ app.get('/temas', (req, res) => {
   });
 });
 
-// Endpoint para añadir un nuevo tema
+// Add theme by Id
+
 app.post('/temas', (req, res) => {
   const tema = req.body.tema;
   pool.query('INSERT INTO Temas (tema) VALUES (?)', [tema], (err, result) => {
@@ -38,7 +37,9 @@ app.post('/temas', (req, res) => {
     }
   });
 });
-// Endpoint para eliminar un tema por ID
+
+// Delete theme by Id
+
 app.delete('/temas/:id', (req, res) => {
     const temaId = req.params.id;
     pool.query('DELETE FROM Temas WHERE id_tema = ?', [temaId], (err, result) => {
@@ -54,9 +55,8 @@ app.delete('/temas/:id', (req, res) => {
     });
   });
   
-  
-  
-  // Endpoint para actualizar un tema por ID
+  // Update theme by Id
+
   app.put('/temas/:id', (req, res) => {
     const temaId = req.params.id;
     const nuevoTema = req.body.tema;
@@ -73,7 +73,8 @@ app.delete('/temas/:id', (req, res) => {
     });
   });
 
-  // Endpoint para obtener todas las preguntas
+  // Get all questions
+
 app.get('/preguntas', (req, res) => {
     pool.query('SELECT * FROM Preguntas', (err, result) => {
       if (err) {
@@ -84,7 +85,8 @@ app.get('/preguntas', (req, res) => {
     });
   });
   
-  // Endpoint para obtener una pregunta por ID
+  // Get question by Id
+
   app.get('/preguntas/:id', (req, res) => {
     const preguntaId = req.params.id;
     pool.query('SELECT * FROM Preguntas WHERE id_pregunta = ?', [preguntaId], (err, result) => {
@@ -100,7 +102,8 @@ app.get('/preguntas', (req, res) => {
     });
   });
   
-  // Endpoint para añadir una nueva pregunta
+  // Add question
+
   app.post('/preguntas', (req, res) => {
     const { id_tema, pregunta, dificultad } = req.body;
     pool.query('INSERT INTO Preguntas (id_tema, pregunta, dificultad) VALUES (?, ?, ?)', [id_tema, pregunta, dificultad], (err, result) => {
@@ -113,7 +116,8 @@ app.get('/preguntas', (req, res) => {
     });
   });
   
-  // Endpoint para actualizar una pregunta por ID
+  // Update question by Id
+
   app.put('/preguntas/:id', (req, res) => {
     const preguntaId = req.params.id;
     const { id_tema, pregunta, dificultad } = req.body;
@@ -130,7 +134,8 @@ app.get('/preguntas', (req, res) => {
     });
   });
   
-  // Endpoint para eliminar una pregunta por ID
+  // Delete question by Id
+
   app.delete('/preguntas/:id', (req, res) => {
     const preguntaId = req.params.id;
     pool.query('DELETE FROM Respuestas WHERE id_pregunta = ?', [preguntaId], (err, result) => {
@@ -154,9 +159,8 @@ app.get('/preguntas', (req, res) => {
     });
 });
 
+  // Get all answers
 
-
-  // Endpoint para obtener todas las respuestas
 app.get('/respuestas', (req, res) => {
   pool.query('SELECT * FROM Respuestas', (err, result) => {
     if (err) {
@@ -167,7 +171,8 @@ app.get('/respuestas', (req, res) => {
   });
 });
 
-// Endpoint para añadir una nueva respuesta
+// Add answer
+
 app.post('/respuestas', (req, res) => {
   const { id_pregunta, respuesta, es_correcta } = req.body;
 
@@ -183,8 +188,8 @@ app.post('/respuestas', (req, res) => {
   });
 });
 
-  
-  // Endpoint para obtener una respuesta por ID
+  // Get answer by Id
+
   app.get('/respuestas/:id', (req, res) => {
     const respuestaId = req.params.id;
     pool.query('SELECT * FROM Respuestas WHERE id_respuesta = ?', [respuestaId], (err, result) => {
@@ -200,7 +205,8 @@ app.post('/respuestas', (req, res) => {
     });
   });
   
-  // Endpoint para añadir una nueva respuesta
+  // Add answer by Id
+
   app.post('/respuestas', (req, res) => {
     const { id_pregunta, respuesta, es_correcta } = req.body;
     pool.query('INSERT INTO Respuestas (id_pregunta, respuesta, es_correcta) VALUES (?, ?, ?)', [id_pregunta, respuesta, es_correcta], (err, result) => {
@@ -212,7 +218,8 @@ app.post('/respuestas', (req, res) => {
     });
   });
   
-  // Endpoint para actualizar una respuesta por ID
+  // Update answer by Id
+
   app.put('/respuestas/:id', (req, res) => {
     const respuestaId = req.params.id;
     const { id_pregunta, respuesta, es_correcta } = req.body;
@@ -229,7 +236,7 @@ app.post('/respuestas', (req, res) => {
     });
   });
   
-  // Endpoint para eliminar una respuesta por ID
+  // Delete answer by Id
   app.delete('/respuestas/:id', (req, res) => {
     const respuestaId = req.params.id;
     pool.query('DELETE FROM Respuestas WHERE id_respuesta = ?', [respuestaId], (err, result) => {
@@ -244,7 +251,6 @@ app.post('/respuestas', (req, res) => {
       }
     });
   });
-
   
 app.post('/examen', (req, res) => {
   const nombresTemas = req.body.nombresTemas;
@@ -261,7 +267,7 @@ app.post('/examen', (req, res) => {
       } else {
         const temaIds = temasResult.map((tema) => tema.id_tema);
 
-        // Obtener las preguntas según los temas y dificultad seleccionados
+        // Create quiz
         pool.query(
           'SELECT * FROM Preguntas WHERE id_tema IN (?) AND dificultad = ? ORDER BY RAND() LIMIT ?',
           [temaIds, dificultad, limite],
@@ -271,7 +277,6 @@ app.post('/examen', (req, res) => {
             } else {
               const preguntas = preguntasResult;
 
-              // Obtener las respuestas mezcladas para cada pregunta
               const preguntaIds = preguntas.map((pregunta) => pregunta.id_pregunta);
               pool.query(
                 'SELECT * FROM Respuestas WHERE id_pregunta IN (?) ORDER BY RAND()',
@@ -288,7 +293,6 @@ app.post('/examen', (req, res) => {
                       respuestasPorPregunta.get(respuesta.id_pregunta).push(respuesta);
                     });
 
-                    // Construir el objeto de examen con preguntas y respuestas
                     const examen = preguntas.map((pregunta) => {
                       return {
                         id_pregunta: pregunta.id_pregunta,
@@ -307,11 +311,7 @@ app.post('/examen', (req, res) => {
       }
     }
   );
-});
-
-
-
-  
+});  
 
 app.listen(3000, () => {
   console.log('Servidor escuchando en puerto 3000');
