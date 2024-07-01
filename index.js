@@ -1,18 +1,13 @@
-const express = require("express");
-const mysql = require("mysql2");
-const cors = require("cors");
-const temaSchema = require("./schemas/tema");
+import cors from "cors";
+import express from "express";
+import pool from "./db/pool.js";
+import temaSchema from "./schemas/tema.js";
 
 const app = express();
-app.use(express.json());
-app.use(cors());
 
-const pool = mysql.createPool({
-  host: "sql7.freemysqlhosting.net",
-  user: "sql7632213",
-  password: "y84CmTviRS",
-  database: "sql7632213",
-});
+app.use(express.json());
+
+app.use(cors());
 
 // Get all themes
 app.get("/temas", (req, res) => {

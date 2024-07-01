@@ -1,4 +1,4 @@
-const Joi = require("joi");
+import Joi from "joi";
 
 const temaSchema = Joi.object({
   id_tema: Joi.number().min(0),
@@ -11,4 +11,4 @@ const temaSchema = Joi.object({
     }),
 });
 
-module.exports = temaSchema;
+export default temaSchema;
