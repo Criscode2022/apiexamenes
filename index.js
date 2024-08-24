@@ -221,22 +221,63 @@ app.get("/respuestas", (req, res) => {
 // Add answer
 
 app.post("/respuestas", (req, res) => {
-  const { id_pregunta, respuesta, es_correcta } = req.body;
+  const respuestas = req.body.respuestas;
 
-  // Imprimir el cuerpo de la solicitud en la consola
-  console.log(req.body);
+  if (!Array.isArray(respuestas) || respuestas.length === 0) {
+    return res.status(400).json({
+      error: "Invalid input, 'respuestas' should be a non-empty array.",
+    });
+  }
 
-  pool.query(
-    "INSERT INTO Respuestas (id_pregunta, respuesta, es_correcta) VALUES (?, ?, ?)",
-    [id_pregunta, respuesta, es_correcta],
-    (err, result) => {
-      if (err) {
-        res.status(500).json(err);
-      } else {
-        res.status(201).json({ id: result.insertId });
-      }
+  if (respuestas.length > 4) {
+    return res.status(400).json({
+      error: "Invalid input, 'respuestas' should have at most 4 items.",
+    });
+  }
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      return res.status(500).json(err);
     }
-  );
+
+    connection.beginTransaction((err) => {
+      if (err) {
+        connection.release();
+        return res.status(500).json(err);
+      }
+
+      const query =
+        "INSERT INTO Respuestas (id_pregunta, respuesta, es_correcta) VALUES ?";
+      const values = respuestas.map(
+        ({ id_pregunta, respuesta, es_correcta }) => [
+          id_pregunta,
+          respuesta,
+          es_correcta,
+        ]
+      );
+
+      connection.query(query, [values], (err, result) => {
+        if (err) {
+          return connection.rollback(() => {
+            connection.release();
+            res.status(500).json(err);
+          });
+        }
+
+        connection.commit((err) => {
+          if (err) {
+            return connection.rollback(() => {
+              connection.release();
+              res.status(500).json(err);
+            });
+          }
+
+          connection.release();
+          res.status(201).json({ affectedRows: result.affectedRows });
+        });
+      });
+    });
+  });
 });
 
 // Get answer by Id
